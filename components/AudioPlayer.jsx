@@ -5,9 +5,10 @@ import axios from 'axios';
 import PlayIcon from '../assets/icons/PlayIcon';
 import AudioPlayerButton from './AudioPlayerButton';
 
-export default function AudioPlayer({ extractedText, setIsLoading }) {
+export default function AudioPlayer({ extractedText, setIsLoading, audioUrl }) {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playSpeed, setPlaySpeed] = useState(1.0);
 
   const tts = async () => {
     setIsLoading(true);
@@ -45,7 +46,7 @@ export default function AudioPlayer({ extractedText, setIsLoading }) {
       }
       setIsPlaying(!isPlaying);
     } else {
-      const audioUrl = await tts();
+      // const audioUrl = await tts();
       if (audioUrl) {
         try {
           const { sound: newSound } = await Audio.Sound.createAsync({ uri: audioUrl });
@@ -74,16 +75,24 @@ export default function AudioPlayer({ extractedText, setIsLoading }) {
     }
   }
 
-  async function handleChangeSpeed(speed) {
+  async function increaseSpeed() {
     if (sound) {
-      await sound.setRateAsync(speed, true);
+      await sound.setRateAsync((playSpeed + 0.15), true);
+      setPlaySpeed(playSpeed + 0.15);
+    }
+  }
+
+  async function decreaseSpeed() {
+    if (sound) {
+      await sound.setRateAsync((playSpeed - 0.15), true);
+      setPlaySpeed(playSpeed - 0.15);
     }
   }
 
   return (
     <View className='flex-row space-x-2'>
 
-      <Text> <AudioPlayerButton type='slow' handlePress={() => handleChangeSpeed(1)} /> </Text>
+      <Text> <AudioPlayerButton type='slow' handlePress={() => decreaseSpeed()} /> </Text>
       
       <Text> <AudioPlayerButton type='10back' handlePress={handleSeekBackward} /> </Text>
 
@@ -98,7 +107,7 @@ export default function AudioPlayer({ extractedText, setIsLoading }) {
 
       <Text> <AudioPlayerButton type='10forward' handlePress={handleSeekForward} /> </Text>
       
-      <Text> <AudioPlayerButton type='fast' handlePress={() => handleChangeSpeed(1)} /> </Text>
+      <Text> <AudioPlayerButton type='fast' handlePress={() => increaseSpeed()} /> </Text>
       
     </View>
   );
