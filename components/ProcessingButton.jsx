@@ -5,7 +5,12 @@ import axios from 'axios';
 
 const ProcessingButton = (props) => {
 
-  const { setIsLoading, docUri, setDocUri, setExtractedText, docName, setAudioUrl, setIsLoadingAudio, voiceLangOpt, voiceNameOpt } = props;
+  const { setIsLoading, docUri, setDocUri, setExtractedText, docName, 
+    setAudioUrl, setIsLoadingAudio, setAudioDurationSrc, 
+    voiceLangOpt, voiceNameOpt 
+  } = props;
+  
+  const cldFnBaseUrl = "https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun";
 
   const handleProcessDoc = async () => {
     setIsLoading(true);
@@ -33,7 +38,7 @@ const ProcessingButton = (props) => {
       }
 
       // const apiResponse = await axios.post('http://127.0.0.1:8080/upload', data, config)
-      const apiResponse = await axios.post('https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun/upload', data, config)
+      const apiResponse = await axios.post(`${cldFnBaseUrl}/upload`, data, config)
       const numberOfPages = apiResponse.data.numPages;
       const pdfUrl = apiResponse.data.pdfUrl;
       console.log(pdfUrl);
@@ -42,7 +47,7 @@ const ProcessingButton = (props) => {
       let processResp = null;
       if (numberOfPages <= 15)  {
         console.log('calling /extract-text endpoint');
-        const till15PgResp = await axios.post('https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun/extract-text', data, config);
+        const till15PgResp = await axios.post(`${cldFnBaseUrl}/extract-text`, data, config);
         console.log(typeof(till15PgResp.data));
         console.log(till15PgResp.data);
         processResp = till15PgResp.data;
@@ -54,7 +59,7 @@ const ProcessingButton = (props) => {
           fName: docName
         }
 
-        const batchPrResp = await axios.post('https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun/batchProcess', batchData, config);
+        const batchPrResp = await axios.post(`${cldFnBaseUrl}/batchProcess`, batchData, config);
         console.log(batchPrResp.data);
         processResp = batchPrResp.data;
         console.log('batch extracted text public url: ', batchPrResp.data.textUrl);
@@ -75,10 +80,12 @@ const ProcessingButton = (props) => {
       console.log('TEXT EXTRACTION COMPLETE, NOW PROCEEDING TO VOICE EXTRACTION /tts');
 
       setIsLoadingAudio(true);
-      const ttsResponse = await axios.post('https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun/tts', ttsData, config);
+      const ttsResponse = await axios.post(`${cldFnBaseUrl}/tts`, ttsData, config);
       console.log(ttsResponse.data.convMsg);
       console.log('audioURL: ', ttsResponse.data.mp3Url);
-      
+      console.log('audio duration: ', ttsResponse.data.durationInSeconds)
+
+      setAudioDurationSrc(ttsResponse.data.durationInSeconds);
       setAudioUrl(ttsResponse.data.mp3Url);
       setIsLoadingAudio(false);
       setDocUri(null);
@@ -107,9 +114,9 @@ const ProcessingButton = (props) => {
       >
         Process the PDF
       </Text>
-      <Text className='text-white my-1'> 
+      {/* <Text className='text-white my-1'> 
         { voiceLangOpt } { "  " } { voiceNameOpt }
-      </Text>
+      </Text> */}
     </TouchableOpacity>
   );
 };

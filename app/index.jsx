@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useState } from 'react';
@@ -16,6 +16,7 @@ const App = () => {
   const [isLoadingAudio, setIsLoadingAudio] = useState(true);
   const [docName, setDocName] = useState('');
   const [audioUrl, setAudioUrl] = useState(null);
+  const [audioDurationSrc, setAudioDurationSrc] = useState(0);
 
   const [voiceLangOpt, setVoiceLangOpt] = useState('');
   const [voiceNameOpt, setVoiceNameOpt] = useState('');
@@ -36,7 +37,6 @@ const App = () => {
     { key: 'hi-IN-Neural2-D', value: 'hi-IN-Neural2-D' },
     // { key: 'te-IN-Standard-B', value: 'te-IN-Standard-B' },
 ];
-
 
   // const voiceGender = [
 
@@ -94,7 +94,8 @@ const App = () => {
         </View>
 
         <ProcessingButton {...{ 
-          setIsLoading, docUri, setDocUri, setExtractedText, docName, setAudioUrl, setIsLoadingAudio,
+          setIsLoading, docUri, setDocUri, setExtractedText, docName, 
+          setAudioUrl, setIsLoadingAudio, setAudioDurationSrc,
           voiceLangOpt,
           voiceNameOpt
           
@@ -103,7 +104,7 @@ const App = () => {
         />
 
         {
-          extractedText.length > 0 && !isLoading ? (
+          (extractedText.length > 0 && !isLoading) ? (
             <View className='h-2/5'>
               <ScrollView className='my-0 mx-6 border-2 p-4 border-gray-500 rounded-md' >
                 <Text className='font-md text-white text-base'> { extractedText } </Text>
@@ -122,14 +123,13 @@ const App = () => {
                     setIsLoading={setIsLoadingAudio} 
                     extractedText={extractedText}
                     audioUrl={audioUrl}
+                    audioDurationSrc={audioDurationSrc}
                   />
                 )
               }
             </View>
           )
         }
-
-        
 
         <StatusBar style="auto" />
       </View>

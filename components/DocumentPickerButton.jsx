@@ -1,8 +1,8 @@
 import { TouchableOpacity, Text, Alert } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
-// import pdfjsLib from 'pdfjs-dist';
-import * as FileSystem from 'expo-file-system';
-// import PDFParser from 'pdf-parse';
+// // import pdfjsLib from 'pdfjs-dist';
+// import * as FileSystem from 'expo-file-system';
+// // import PDFParser from 'pdf-parse';
 
 
 const DocumentPickerButton = ({ setDocUri, setDocName }) => {
@@ -25,7 +25,7 @@ const DocumentPickerButton = ({ setDocUri, setDocName }) => {
 
     } catch (error) {
       console.log(error);
-      Alert.alert("Eror while picking the image", error);
+      Alert.alert("Eror while picking the PDF", error);
     }
   };
 
