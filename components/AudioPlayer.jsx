@@ -5,12 +5,13 @@ import axios from 'axios';
 import AudioPlayerButton from './AudioPlayerButton';
 import Slider from '@react-native-community/slider';
 
-export default function AudioPlayer({ extractedText, setIsLoading, audioUrl, audioDurationSrc }) {
-  const [sound, setSound] = useState(null);
+export default function AudioPlayer({ extractedText, isLoading, setIsLoading, audioUrl, setAudioUrl, audioDurationSrc, refresh, setRefresh }) {
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [playSpeed, setPlaySpeed] = useState(1.0);
   const [audioPosition, setAudioPosition] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const [sound, setSound] = useState(null);
 
   const tts = async () => {
     setIsLoading(true);
@@ -38,18 +39,20 @@ export default function AudioPlayer({ extractedText, setIsLoading, audioUrl, aud
     }
   };
 
-  useEffect(() => {
-    // Load the audio file and set up audio player
-    if (sound === null) {
-      const loadAudio = async () => {
-        const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
-        setSound(sound);
-        const duration = await sound.getStatusAsync();
-        setAudioDuration(duration.durationMillis / 1000);
-      };
-      loadAudio();
-    }
-  }, [sound]);
+  // useEffect(() => {
+  //   // Load the audio file and set up audio player
+  //   console.log('sound is being reset here')
+  //   // if (sound === null) {
+  //     const loadAudio = async () => {
+  //       const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
+  //       console.log('sound changed');
+  //       setSound(sound);
+  //       const duration = await sound.getStatusAsync();
+  //       setAudioDuration(duration.durationMillis / 1000);
+  //     };
+  //     loadAudio();
+  //   // }
+  // }, [ audioUrl ]);
 
   useEffect(() => {
     // Update audio position
@@ -69,41 +72,49 @@ export default function AudioPlayer({ extractedText, setIsLoading, audioUrl, aud
   async function handlePlayPause() {
 
     try {
-      if (sound === null) return;
+      // if (sound === null) return;
 
-      if (isPlaying) {
-        await sound.pauseAsync();
+      // if (isPlaying) {
+      //   await sound.pauseAsync();
+      // } else {
+      //   await sound.playAsync();
+      // }
+      // setIsPlaying(!isPlaying);
+
+
+      if (sound) {
+        if (isPlaying) {
+          await sound.pauseAsync();
+        } else {
+          await sound.playAsync();
+        }
+        setIsPlaying(!isPlaying);
       } else {
-        await sound.playAsync();
+        // const audioUrl = await tts();
+        if (audioUrl) {
+          setRefresh(false);
+          try {
+            const { sound: newSound } = await Audio.Sound.createAsync({ uri: audioUrl });
+            const duration = await newSound.getStatusAsync();
+            setAudioDuration(duration.durationMillis / 1000);
+            setSound(newSound);
+            setAudioUrl(null);
+            await newSound.playAsync();
+            setIsPlaying(true);
+          } catch (error) {
+            console.error("Error playing audio:", error);
+            Alert.alert("Error playing audio", "Please try again later...");
+          }
+        }
       }
-      setIsPlaying(!isPlaying);
+
     } catch (error) {
       console.error('Error toggling playback:', error.message);
     }
 
 
 
-    // if (sound) {
-    //   if (isPlaying) {
-    //     await sound.pauseAsync();
-    //   } else {
-    //     await sound.playAsync();
-    //   }
-    //   setIsPlaying(!isPlaying);
-    // } else {
-    //   // const audioUrl = await tts();
-    //   if (audioUrl) {
-    //     try {
-    //       const { sound: newSound } = await Audio.Sound.createAsync({ uri: audioUrl });
-    //       setSound(newSound);
-    //       await newSound.playAsync();
-    //       setIsPlaying(true);
-    //     } catch (error) {
-    //       console.error("Error playing audio:", error);
-    //       Alert.alert("Error playing audio", "Please try again later...");
-    //     }
-    //   }
-    // }
+    
   }
 
   const handleSeek = async (value) => {
@@ -175,7 +186,7 @@ export default function AudioPlayer({ extractedText, setIsLoading, audioUrl, aud
           />
       </View>   
 
-      <View className='flex-row space-x-2 justify-center items-center'>
+      <View className='flex-row space-x-2 justify-center items-center mt-2'>
         <Text> <AudioPlayerButton type='slow' handlePress={() => decreaseSpeed()} /> </Text>
         
         <Text> <AudioPlayerButton type='10back' handlePress={handleSeekBackward} /> </Text>

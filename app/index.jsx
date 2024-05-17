@@ -17,6 +17,8 @@ const App = () => {
   const [docName, setDocName] = useState('');
   const [audioUrl, setAudioUrl] = useState(null);
   const [audioDurationSrc, setAudioDurationSrc] = useState(0);
+  const [refresh, setRefresh] = useState(false);
+
 
   const [voiceLangOpt, setVoiceLangOpt] = useState('');
   const [voiceNameOpt, setVoiceNameOpt] = useState('');
@@ -43,40 +45,44 @@ const App = () => {
   // ]
 
   return (
-    <SafeAreaView className='bg-slate-700 h-full'>
+    <SafeAreaView className="bg-slate-700 h-full">
       <View className="flex-1 items-center mt-6">
-        <Text className='text-white text-3xl font-semibold my-4'>
+        <Text className="text-white text-3xl font-semibold my-4">
           ListenPDF DEMO
         </Text>
-        
-        <DocumentPickerButton setDocUri={setDocUri} setDocName={setDocName} />
-        
-        { docUri && <Text className='text-gray-100'>{ docName } is now selected </Text> }
 
-        <View className='flex-row gap-4 my-1'>
+        <DocumentPickerButton setDocUri={setDocUri} setDocName={setDocName} />
+
+        {docUri && (
+          <Text className="text-gray-100">{docName} is now selected </Text>
+        )}
+
+        <View className="flex-row gap-4 my-1">
           <View>
-            <SelectList 
+            <SelectList
               data={voiceLangs}
               setSelected={setVoiceLangOpt}
               save="value"
-              boxStyles={{ backgroundColor: '#233223' }}
+              boxStyles={{ backgroundColor: "#233223" }}
               // dropdownStyles={{ backgroundColor: '#1d1d1d'}}
               // dropdownItemStyles={{ borderColor: 'white' }}
-              inputStyles={{ color: 'white' }}
-              dropdownTextStyles={{ color: 'white' }}
-              defaultOption={{ key:'en-IN', value:'en-IN' }}
-              
+              inputStyles={{ color: "white" }}
+              dropdownTextStyles={{ color: "white" }}
+              defaultOption={{ key: "en-IN", value: "en-IN" }}
             />
           </View>
           <View>
-            <SelectList 
+            <SelectList
               data={voiceNames}
               setSelected={setVoiceNameOpt}
               save="value"
-              inputStyles={{ color: 'white' }}
-              boxStyles={{ backgroundColor: '#533223' }}
-              dropdownTextStyles={{ color: 'white' }}
-              defaultOption={{ key:'en-IN-Standard-A', value:'en-IN-Standard-A' }}
+              inputStyles={{ color: "white" }}
+              boxStyles={{ backgroundColor: "#533223" }}
+              dropdownTextStyles={{ color: "white" }}
+              defaultOption={{
+                key: "en-IN-Standard-A",
+                value: "en-IN-Standard-A",
+              }}
             />
           </View>
 
@@ -93,43 +99,64 @@ const App = () => {
           /> */}
         </View>
 
-        <ProcessingButton {...{ 
-          setIsLoading, docUri, setDocUri, setExtractedText, docName, 
-          setAudioUrl, setIsLoadingAudio, setAudioDurationSrc,
-          voiceLangOpt,
-          voiceNameOpt
-          
-          }} 
-
+        <ProcessingButton
+          {...{
+            setIsLoading,
+            docUri,
+            setDocUri,
+            setExtractedText,
+            docName,
+            setAudioUrl,
+            setIsLoadingAudio,
+            setAudioDurationSrc,
+            voiceLangOpt,
+            voiceNameOpt,
+            setRefresh
+          }}
         />
 
-        {
-          (extractedText.length > 0 && !isLoading) ? (
-            <View className='h-2/5'>
-              <ScrollView className='my-0 mx-6 border-2 p-4 border-gray-500 rounded-md' >
-                <Text className='font-md text-white text-base'> { extractedText } </Text>
-              </ScrollView>
-            </View>
-          ) : isLoading ? <ActivityIndicator className='h-32 w-32' size='large' color='#ffffff' /> : <View></View>
-        }
+        {extractedText.length > 0 && !isLoading ? (
+          <View className="h-2/5">
+            <ScrollView className="my-0 mx-6 border-2 p-4 border-gray-500 rounded-md">
+              <Text className="font-md text-white text-base">
+                {"First few lines of the extracted text: "}
+                {extractedText.substring(0, 1800)}{" "}
+              </Text>
+            </ScrollView>
+          </View>
+        ) : isLoading ? (
+          <ActivityIndicator
+            className="h-32 w-32"
+            size="large"
+            color="#ffffff"
+          />
+        ) : (
+          <View></View>
+        )}
 
-        {
-          extractedText && (
-            <View className='m-4'>
-              { isLoadingAudio  ? (
-                  <ActivityIndicator className='h-32 w-32' size='large' color='#ffffff' />
-                ) : (
-                  <AudioPlayer 
-                    setIsLoading={setIsLoadingAudio} 
-                    extractedText={extractedText}
-                    audioUrl={audioUrl}
-                    audioDurationSrc={audioDurationSrc}
-                  />
-                )
-              }
-            </View>
-          )
-        }
+        {extractedText && (
+          <View className="m-4">
+            {isLoadingAudio ? (
+              <ActivityIndicator
+                className="h-32 w-32"
+                size="large"
+                color="#ffffff"
+              />
+            ) : isLoading ? (
+              <View></View>
+            ) : (
+              <AudioPlayer
+                setIsLoading={setIsLoadingAudio}
+                extractedText={extractedText}
+                audioUrl={audioUrl}
+                isLoading={isLoadingAudio}
+                refresh={refresh}
+                setRefresh={setRefresh}
+                setAudioUrl={setAudioUrl}
+              />
+            )}
+          </View>
+        )}
 
         <StatusBar style="auto" />
       </View>

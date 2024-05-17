@@ -6,14 +6,16 @@ import axios from 'axios';
 const ProcessingButton = (props) => {
 
   const { setIsLoading, docUri, setDocUri, setExtractedText, docName, 
-    setAudioUrl, setIsLoadingAudio, setAudioDurationSrc, 
-    voiceLangOpt, voiceNameOpt 
+    setAudioUrl, setIsLoadingAudio, setAudioDurationSrc, setRefresh,
+    voiceLangOpt, voiceNameOpt
   } = props;
   
   const cldFnBaseUrl = "https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun";
 
   const handleProcessDoc = async () => {
     setIsLoading(true);
+    setAudioUrl(null);
+    setRefresh(true);
     try {
       if (docUri === null)  {
         Alert.alert("", "Please select the PDF first");
