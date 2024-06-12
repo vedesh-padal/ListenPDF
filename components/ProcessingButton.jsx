@@ -1,6 +1,7 @@
 import { TouchableOpacity, Text, Alert } from "react-native";
 import * as FileSystem from 'expo-file-system'
 import axios from 'axios';
+import AppContext from "../app/AppContext";
 
 
 const ProcessingButton = (props) => {
@@ -9,6 +10,9 @@ const ProcessingButton = (props) => {
     setAudioUrl, setIsLoadingAudio, setAudioDurationSrc, setRefresh,
     voiceLangOpt, voiceNameOpt
   } = props;
+
+
+  const { processedFiles, setProcessedFiles } = useContext(AppContext);
   
   const cldFnBaseUrl = "https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun";
 
@@ -85,10 +89,47 @@ const ProcessingButton = (props) => {
       const ttsResponse = await axios.post(`${cldFnBaseUrl}/tts`, ttsData, config);
       console.log(ttsResponse.data.convMsg);
       console.log('audioURL: ', ttsResponse.data.mp3Url);
-      console.log('audio duration: ', ttsResponse.data.durationInSeconds)
+      console.log('audio duration: ', ttsResponse.data.durationInSeconds);
+
+      // Save audio locally
+      const saveAudioLocally = async (audioUrl, fileName) => {
+        try {
+          const audioDir = `${FileSystem.documentDirectory}listen/`;
+          await FileSystem.makeDirectoryAsync(audioDir, { intermediates: true });
+          const audioFilePath = `${audioDir}${fileName}.mp3`;
+          await FileSystem.downloadAsync(audioUrl, audioFilePath);
+          return audioFilePath;
+        } catch (error) {
+          console.error('Error saving audio locally:', error);
+          throw error;
+        }
+      };
+
+      // Copy PDF locally
+      const copyPDFLocally = async (pdfUri, fileName) => {
+        try {
+          const pdfDir = `${FileSystem.documentDirectory}listen/`;
+          await FileSystem.makeDirectoryAsync(pdfDir, { intermediates: true });
+          const pdfFilePath = `${pdfDir}${fileName}.pdf`;
+          await FileSystem.copyAsync({ from: pdfUri, to: pdfFilePath });
+          return pdfFilePath;
+        } catch (error) {
+          console.error('Error copying PDF locally:', error);
+          throw error;
+        }
+      };
+
+      const localPdfPath = await copyPDFLocally(docUri, docName);
+      console.log('PDF copied locally to', localPdfPath);
+
+      const localAudioPath = await saveAudioLocally(audioUrl, docName);
+      console.log('Audio saved locally at', localAudioPath);
+
+
 
       setAudioDurationSrc(ttsResponse.data.durationInSeconds);
-      setAudioUrl(ttsResponse.data.mp3Url);
+      // setAudioUrl(ttsResponse.data.mp3Url);
+      setAudioUrl(localAudioPath);
       setIsLoadingAudio(false);
       setDocUri(null);
       
@@ -96,11 +137,20 @@ const ProcessingButton = (props) => {
       console.log("Error processing the PDF",  error.message);
       console.log(error.code);
       console.log(error.response)
-      Alert.alert("Error processing the PDF", "Please try again later...");
       setIsLoading(false);
-
       setIsLoadingAudio(false);
       setDocUri(null);
+
+      const newFile = {
+        docName,
+        localPdfPath,
+        localAudioPath
+      };
+
+      setProcessedFiles([...processedFiles, newFile]);
+
+
+      Alert.alert("Error processing the PDF", "Please try again later...");
     }
   }
 

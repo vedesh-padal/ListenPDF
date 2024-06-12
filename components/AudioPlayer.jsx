@@ -13,31 +13,31 @@ export default function AudioPlayer({ extractedText, isLoading, setIsLoading, au
   const [audioDuration, setAudioDuration] = useState(0);
   const [sound, setSound] = useState(null);
 
-  const tts = async () => {
-    setIsLoading(true);
-    console.log(extractedText);
-    const data = {
-      content: extractedText
-    };
+  // const tts = async () => {
+  //   setIsLoading(true);
+  //   console.log(extractedText);
+  //   const data = {
+  //     content: extractedText
+  //   };
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
+  //   const config = {
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     }
+  //   };
 
-    try {
-      const apiResponse = await axios.post('https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun/tts', data, config);
-      console.log(apiResponse.data.fileUrl);
-      setIsLoading(false);
-      return apiResponse.data.fileUrl;
+  //   try {
+  //     const apiResponse = await axios.post('', data, config);
+  //     console.log(apiResponse.data.fileUrl);
+  //     setIsLoading(false);
+  //     return apiResponse.data.fileUrl;
       
-    } catch (error) {
-      console.log("Error while converting to voice",  error);
-      Alert.alert("Error while converting to voice", "Please try again later...");
-      setIsLoading(false);
-    }
-  };
+  //   } catch (error) {
+  //     console.log("Error while converting to voice",  error);
+  //     Alert.alert("Error while converting to voice", "Please try again later...");
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // useEffect(() => {
   //   // Load the audio file and set up audio player
@@ -92,7 +92,7 @@ export default function AudioPlayer({ extractedText, isLoading, setIsLoading, au
       } else {
         // const audioUrl = await tts();
         if (audioUrl) {
-          setRefresh(false);
+          // setRefresh(false);
           try {
             const { sound: newSound } = await Audio.Sound.createAsync({ uri: audioUrl });
             const duration = await newSound.getStatusAsync();
@@ -111,10 +111,7 @@ export default function AudioPlayer({ extractedText, isLoading, setIsLoading, au
     } catch (error) {
       console.error('Error toggling playback:', error.message);
     }
-
-
-
-    
+ 
   }
 
   const handleSeek = async (value) => {
