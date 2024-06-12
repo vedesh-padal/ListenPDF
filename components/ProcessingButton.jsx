@@ -2,17 +2,18 @@ import { TouchableOpacity, Text, Alert } from "react-native";
 import * as FileSystem from 'expo-file-system'
 import axios from 'axios';
 import AppContext from "../app/AppContext";
+import { useContext } from "react";
 
 
 const ProcessingButton = (props) => {
 
   const { setIsLoading, docUri, setDocUri, setExtractedText, docName, 
     setAudioUrl, setIsLoadingAudio, setAudioDurationSrc, setRefresh,
-    voiceLangOpt, voiceNameOpt
+    voiceLangOpt, voiceNameOpt, isLoading
   } = props;
 
 
-  const { processedFiles, setProcessedFiles } = useContext(AppContext);
+  const { processedFiles, setProcessedFiles, addProcessedFile } = useContext(AppContext);
   
   const cldFnBaseUrl = "https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun";
 
@@ -110,7 +111,16 @@ const ProcessingButton = (props) => {
         try {
           const pdfDir = `${FileSystem.documentDirectory}listen/`;
           await FileSystem.makeDirectoryAsync(pdfDir, { intermediates: true });
-          const pdfFilePath = `${pdfDir}${fileName}.pdf`;
+          const pdfFilePath = `${pdfDir}${fileName}`;
+
+          // Check if the file already exists
+          const fileInfo = await FileSystem.getInfoAsync(pdfFilePath);
+          if (fileInfo.exists) {
+            // Delete the existing file
+            await FileSystem.deleteAsync(pdfFilePath);
+          }
+
+          // Copy the new file
           await FileSystem.copyAsync({ from: pdfUri, to: pdfFilePath });
           return pdfFilePath;
         } catch (error) {
@@ -122,7 +132,7 @@ const ProcessingButton = (props) => {
       const localPdfPath = await copyPDFLocally(docUri, docName);
       console.log('PDF copied locally to', localPdfPath);
 
-      const localAudioPath = await saveAudioLocally(audioUrl, docName);
+      const localAudioPath = await saveAudioLocally(ttsResponse.data.mp3Url, docName);
       console.log('Audio saved locally at', localAudioPath);
 
 
@@ -132,6 +142,17 @@ const ProcessingButton = (props) => {
       setAudioUrl(localAudioPath);
       setIsLoadingAudio(false);
       setDocUri(null);
+
+      const newFile = {
+        docName,
+        localPdfPath,
+        localAudioPath
+      };
+
+      console.log(`processed file details: `, newFile);
+
+      // setProcessedFiles([...processedFiles, newFile]);
+      await addProcessedFile(newFile);
       
     } catch (error) {
       console.log("Error processing the PDF",  error.message);
@@ -140,15 +161,6 @@ const ProcessingButton = (props) => {
       setIsLoading(false);
       setIsLoadingAudio(false);
       setDocUri(null);
-
-      const newFile = {
-        docName,
-        localPdfPath,
-        localAudioPath
-      };
-
-      setProcessedFiles([...processedFiles, newFile]);
-
 
       Alert.alert("Error processing the PDF", "Please try again later...");
     }
@@ -160,6 +172,7 @@ const ProcessingButton = (props) => {
       onPress={handleProcessDoc}
       className="my-2 mb-6 flex justify-center items-center"
       activeOpacity={0.7}
+      disabled={isLoading}
     >
       <Text
         className={`text-gray-200 text-base font-medium p-2 px-3 rounded-md bg-zinc-800`}

@@ -98,7 +98,7 @@ export default function AudioPlayer({ extractedText, isLoading, setIsLoading, au
             const duration = await newSound.getStatusAsync();
             setAudioDuration(duration.durationMillis / 1000);
             setSound(newSound);
-            setAudioUrl(null);
+            // setAudioUrl(null);
             await newSound.playAsync();
             setIsPlaying(true);
           } catch (error) {
@@ -167,7 +167,7 @@ export default function AudioPlayer({ extractedText, isLoading, setIsLoading, au
       <View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 300 }}>
             <Text className='text-white'>{formatTime(audioPosition)}</Text>
-            <Text className='text-black bg-slate-300 border rounded-lg w-10 h-6 text-sm text-center pt-[2px]'> { playSpeed } </Text>
+            <Text className='text-black bg-slate-300 border rounded-lg w-10 h-6 text-sm text-center pt-[2px]'> x{ playSpeed } </Text>
             <Text className='text-white'>{formatTime(audioDuration)}</Text>
           </View>
 

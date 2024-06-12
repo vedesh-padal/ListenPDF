@@ -20,7 +20,7 @@ export default function App() {
             Hi! Welcome to <Text className="font-extrabold">{'\n'}ListenPDF</Text> click the button below...
           </Text>
           <CustomButton 
-            title='Home'
+            title='Continue'
             handlePress={() => router.push('/home')}
             containerStyles={"w-full mt-7 bg-gray-600"}
             textStyles={"text-white text-2xl text-"}

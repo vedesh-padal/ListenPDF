@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import DocumentPickerButton from '../../components/DocumentPickerButton';
 import ProcessingButton from '../../components/ProcessingButton';
 import AudioPlayer from '../../components/AudioPlayer';
@@ -20,19 +20,19 @@ const Home = () => {
   const [audioDurationSrc, setAudioDurationSrc] = useState(0);
   const [refresh, setRefresh] = useState(false);
 
-  const { audioUrl, setAudioUrl, processedFiles, setProcessedFiles } = useContext(AppContext);
+  const { audioUrl, setAudioUrl } = useContext(AppContext);
 
 
   const [voiceLangOpt, setVoiceLangOpt] = useState('');
   const [voiceNameOpt, setVoiceNameOpt] = useState('');
 
   const voiceLangs = [
-    { key: '1', value: 'en-IN' },
-    { key: '2', value: 'te-IN' },
-    { key: '3', value: 'hi-IN' }
+    { key: 'en-IN', value: 'English' },
+    { key: 'te-IN', value: 'Telugu' },
+    { key: 'hi-IN', value: 'Hindi' }
   ];
 
-  const voiceNames = [
+  /*
     { key: 'en-IN-Neural2-A', value: 'en-IN-Neural2-A' },
     { key: 'te-IN-Standard-A', value: 'te-IN-Standard-A' },
     { key: 'en-IN-Neural2-D', value: 'en-IN-Neural2-D' },
@@ -40,6 +40,17 @@ const Home = () => {
     { key: 'hi-IN-Standard-A', value: 'hi-IN-Standard-A' },
     { key: 'hi-IN-Neural2-A', value: 'hi-IN-Neural2-A' },
     { key: 'hi-IN-Neural2-D', value: 'hi-IN-Neural2-D' },
+  */
+
+
+  const voiceNames = [
+    { key: 'en-IN-Neural2-A', value: 'Natural English' },
+    { key: 'te-IN-Standard-A', value: 'Simple Telugu' },
+    { key: 'en-IN-Neural2-D', value: 'Clear English' },
+    { key: 'en-IN-Standard-A', value: 'Standard English' },
+    { key: 'hi-IN-Standard-A', value: 'Simple Hindi' },
+    { key: 'hi-IN-Neural2-A', value: 'Natural Hindi' },
+    { key: 'hi-IN-Neural2-D', value: 'Clear Hindi' },
     // { key: 'te-IN-Standard-B', value: 'te-IN-Standard-B' },
 ];
 
@@ -65,26 +76,26 @@ const Home = () => {
             <SelectList
               data={voiceLangs}
               setSelected={setVoiceLangOpt}
-              save="value"
+              save="key"
               boxStyles={{ backgroundColor: "#233223" }}
               // dropdownStyles={{ backgroundColor: '#1d1d1d'}}
               // dropdownItemStyles={{ borderColor: 'white' }}
               inputStyles={{ color: "white" }}
               dropdownTextStyles={{ color: "white" }}
-              defaultOption={{ key: "en-IN", value: "en-IN" }}
+              defaultOption={{ key: "en-IN", value: "English" }}
             />
           </View>
           <View>
             <SelectList
               data={voiceNames}
               setSelected={setVoiceNameOpt}
-              save="value"
+              save="key"
               inputStyles={{ color: "white" }}
               boxStyles={{ backgroundColor: "#533223" }}
               dropdownTextStyles={{ color: "white" }}
               defaultOption={{
                 key: "en-IN-Standard-A",
-                value: "en-IN-Standard-A",
+                value: "Standard English",
               }}
             />
           </View>
@@ -106,7 +117,7 @@ const Home = () => {
           {...{
             setIsLoading, docUri, setDocUri, setExtractedText, docName,
             setAudioUrl, setIsLoadingAudio, setAudioDurationSrc,
-            voiceLangOpt, voiceNameOpt, setRefresh,
+            voiceLangOpt, voiceNameOpt, setRefresh, isLoading
           }}
         />
 
@@ -115,7 +126,7 @@ const Home = () => {
             <ScrollView className="my-0 mx-6 border-2 p-4 border-gray-500 rounded-md">
               <Text className="font-md text-white text-base">
                 {"First few lines of the extracted text: "}
-                {extractedText.substring(0, 1800)}{" "}
+                {extractedText.substring(0, 2000)}{" "}
               </Text>
             </ScrollView>
           </View>

@@ -1,8 +1,8 @@
 import { View, Text, Image } from 'react-native'
 import { Tabs, Redirect } from 'expo-router'
 
-import { processed, process, home } from '../../constants/icons'
-import AppProvider from '../AppContext'
+import { processed, process, home, about } from '../../constants/icons'
+import { AppProvider } from '../AppContext'
 
 const TabIcon = ({ icon, color, name, focussed }) => {
   return (
@@ -32,7 +32,7 @@ const TabsLayout = () => {
             backgroundColor: '#161622',
             borderTopWidth: 1,
             borderTopColor: '#232533',
-            height: 72
+            height: 56
 
           }
         }}
@@ -52,7 +52,7 @@ const TabsLayout = () => {
             )
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name='process'
           options={{
             title: 'Process',
@@ -66,7 +66,7 @@ const TabsLayout = () => {
               />
             )
           }}
-        />
+        /> */}
         <Tabs.Screen
           name='processed'
           options={{
@@ -77,6 +77,21 @@ const TabsLayout = () => {
                 icon={processed}
                 color={color}
                 name='Processed'
+                focus={focussed}
+              />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name='about'
+          options={{
+            title: 'About',
+            headerShown: false,
+            tabBarIcon: ({ color, focussed }) => (
+              <TabIcon 
+                icon={about}
+                color={color}
+                name='About'
                 focus={focussed}
               />
             )
