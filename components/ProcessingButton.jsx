@@ -15,7 +15,7 @@ const ProcessingButton = (props) => {
 
   const { processedFiles, setProcessedFiles, addProcessedFile } = useContext(AppContext);
   
-  const cldFnBaseUrl = "https://asia-south1-seismic-handler-421010.cloudfunctions.net/mini-proj-cloud-fun";
+  const cldFnBaseUrl = "";
 
   const handleProcessDoc = async () => {
     setIsLoading(true);
