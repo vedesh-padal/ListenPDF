@@ -1,9 +1,13 @@
 import { ScrollView, Text, TouchableOpacity, View, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as FileSystem from 'expo-file-system';
 
 
 const About = () => {
+
+  const handleLinkPress = () => {
+    Linking.openURL('https://github.com/vedesh-padal/ListenPDF');
+  };
+
   return (
     <SafeAreaView className="bg-slate-700 h-full">
       <ScrollView className="overflow-y-auto m-4 my-6">
@@ -59,9 +63,11 @@ const About = () => {
           <Text className="text-base text-slate-200 mb-2 py-0">
             <Text style={{ fontWeight: 'bold', fontSize: 20 }}>This Project is Open-Source ❤️{"\n"}</Text>
             You can check the source-code at: {"\n"}
-            <Text className="text-base text-slate-200 underline my-0 py-0">
-              https://github.com/vedesh-padal/ListenPDF
-            </Text>
+            <TouchableOpacity onPress={handleLinkPress}>
+              <Text className="text-base text-slate-200 underline my-0 py-0">
+                https://github.com/vedesh-padal/ListenPDF
+              </Text>
+            </TouchableOpacity>
           </Text>
 
           <Text className="text-xl text-slate-300">

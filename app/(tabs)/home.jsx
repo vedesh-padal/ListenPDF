@@ -60,9 +60,9 @@ const Home = () => {
 
   return (
     <SafeAreaView className="bg-slate-700 h-full">
-      <View className="flex-1 items-center mt-6">
-        <Text className="text-white text-3xl font-semibold my-4">
-          ListenPDF DEMO
+      <View className="flex-1 items-center mt-4">
+        <Text className="text-white text-4xl font-semibold my-4">
+          ListenPDF
         </Text>
 
         <DocumentPickerButton setDocUri={setDocUri} setDocName={setDocName} />
@@ -125,7 +125,7 @@ const Home = () => {
           <View className="h-2/5">
             <ScrollView className="my-0 mx-6 border-2 p-4 border-gray-500 rounded-md">
               <Text className="font-md text-white text-base">
-                {"First few lines of the extracted text: "}
+                {"First few lines of the extracted text: \n"}
                 {extractedText.substring(0, 2000)}{" "}
               </Text>
             </ScrollView>
