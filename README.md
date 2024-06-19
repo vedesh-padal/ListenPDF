@@ -2,6 +2,10 @@
 
 ListenPDF is a mobile application designed to empower visually impaired students by providing an inclusive and accessible platform for studying and comprehending text in English, Telugu, and Hindi languages. Leveraging the power of Google Cloud Document AI, ListenPDF offers advanced document recognition and text-to-speech capabilities, enabling students to access and understand educational materials with ease.
 
+### System Workflow
+![listenpdf-system-workflow](https://github.com/vedesh-padal/ListenPDF/assets/92447640/c445b78a-f85c-45a3-9010-e11e3cbc6d81)
+
+
 (currently the app is in development)
 
 ## Key Features
